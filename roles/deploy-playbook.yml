@@ -1,0 +1,8 @@
+---
+- name: Run deploy myproject
+  hosts: myproject
+  become: true
+  roles:
+    - -my-project
+  vars_files:
+    - my-project/vars/dev.yml

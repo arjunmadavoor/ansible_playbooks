@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  rabbitmq:
+    hostname: rabbit
+    image: rabbitmq:3.8
+    restart: always
+    ports:
+      - 127.0.0.1:5672:5672

@@ -1,0 +1,13 @@
+---
+# Install All required packages 
+- name: Add deadsnakes PPA repository
+  apt_repository:
+    repo: ppa:deadsnakes/ppa
+    state: present
+
+- name: Running apt update
+  apt: update_cache=yes
+
+- name: Install all listed packages
+  apt: pkg={{ item }} state=present
+  with_items: "{{ dependencies }}"

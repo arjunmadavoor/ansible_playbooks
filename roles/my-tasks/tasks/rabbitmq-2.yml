@@ -1,0 +1,23 @@
+---
+
+- name: Create directory for docker compose if not exists
+  file:
+    path: "{{project_root}}/rabbit_container/"
+    state: directory
+    owner: root
+    group: root
+    mode: 0775
+
+- name: Copy rabbitmq compose file
+  copy:
+    src: "/Users/user/Documents/cicd-infra/ansible_deploy_planing/roles/my-tasks/files/docker-compose.yml"
+    dest: "{{project_root}}/rabbit_container/docker-compose.yml"
+    force: true
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: run docker compose command
+  shell: |
+    cd {{project_root}}/rabbit_container/
+    docker compose up -d  --build --force-recreate --remove-orphans

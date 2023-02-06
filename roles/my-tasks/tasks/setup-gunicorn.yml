@@ -1,0 +1,30 @@
+---
+# - name: Install Gunicorn
+#   package:
+#     name: gunicorn
+#     state: present
+
+- name: Install Gunicorn
+  shell: |
+    . {{virtualenv_dir}}/bin/activate
+    cd {{project_dir}}
+    pip install gunicorn
+
+- name: Copy Gunicorn socket
+  template:
+    src: gunicorn.socket.j2
+    dest: /etc/systemd/system/gunicorn.socket
+
+- name: Create systemd service
+  template:
+    src: gunicorn.service.j2
+    dest: /etc/systemd/system/gunicorn.service
+
+
+
+- name: enable and start gunicorn services
+  shell: |
+    sudo systemctl start gunicorn.socket
+    sudo systemctl enable gunicorn.socket
+    sudo systemctl daemon-reload
+    sudo systemctl restart gunicorn

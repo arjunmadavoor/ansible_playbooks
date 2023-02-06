@@ -1,0 +1,52 @@
+---
+- name: Install virtualenv
+  pip:
+    name: virtualenv
+
+- name: Copy requirements file
+  copy:
+    src: requirements.txt
+    dest: "{{project_dir}}/requirements.txt"
+    force: true
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  when: requirements_required
+
+- name: Copy settings file
+  copy:
+    src: settings.py
+    dest: "{{project_dir}}/{{project_app_name}}/settings.py"
+    force: true
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  when: settings_required
+
+- name: Copy project env file
+  copy:
+    src: "{{project_name}}_env_{{ env }}"
+    dest: "{{project_env_path}}"
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    force: yes
+  when: env_required
+
+- name: Manually create the initial virtualenv
+  command:
+    cmd: virtualenv {{virtualenv_dir}} --python={{virtualenv_python_path}}
+    creates: '{{virtualenv_dir}}'
+
+- name: Install requirements
+  pip:
+    requirements: "{{project_dir}}/{{requirements_file}}"
+    virtualenv: "{{virtualenv_dir}}"
+    extra_args: --no-cache-dir
+    
+- name: Migrate db and collectstatic
+  shell: |
+    . {{virtualenv_dir}}/bin/activate
+    cd {{project_dir}}
+    python3 manage.py migrate
+    python3 manage.py collectstatic --noinput

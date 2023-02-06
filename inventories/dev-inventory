@@ -1,0 +1,5 @@
+[my-project]
+127.0.0.1 ansible_host=my-aac-dev ansible_user=ubuntu
+
+[my-project-2]
+192.168.64.9 ansible_host=my-em-dev ansible_user=ubuntu

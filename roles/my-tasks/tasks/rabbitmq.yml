@@ -1,0 +1,12 @@
+---
+- name: Create RabbitMQ container
+  docker_container:
+    name: my_rabbitmq
+    image: rabbitmq:3.8
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    hostname: "127.0.0.1"
+    state: started
+    restart_policy: unless-stopped
+    network_mode: host

@@ -1,0 +1,9 @@
+--- 
+
+- name: Conditionally include install-packages
+  include_tasks: my-tasks/tasks/install-packages.yml
+  when: execute_pkg_install | default(false)
+
+- name: Conditionally include install-docker
+  include_tasks: my-tasks/tasks/install-docker.yml
+  when: execute_docker_install | default(false)

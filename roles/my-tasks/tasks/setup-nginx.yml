@@ -1,0 +1,33 @@
+---
+- name: Set up nginx
+  template: 
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/{{ project_name }}
+
+- name: Enable nginx site
+  command: ln -sf /etc/nginx/sites-available/{{ project_name }} /etc/nginx/sites-enabled/
+
+- name: Restart Nginx
+  service:
+    name: nginx
+    state: restarted
+
+# - file: dest=/etc/nginx/ssl/{{project_name}}
+#     owner=root
+#     group=root
+#     mode=u=rw,g=r,o=r
+#     recurse=yes
+
+# - copy:
+#     src: '{{project_name}}_crt_{{ env }}'
+#     dest: /etc/nginx/ssl/{{project_name}}/{{project_name}}.crt
+#     owner: root
+#     group: root
+#     mode: '0644'
+
+# - copy:
+#     src: '{{project_name}}_key_{{ env }}'
+#     dest: /etc/nginx/ssl/{{project_name}}/{{project_name}}.key
+#     owner: root
+#     group: root
+#     mode: '0644'

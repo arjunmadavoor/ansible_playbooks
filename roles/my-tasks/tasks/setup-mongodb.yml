@@ -1,0 +1,78 @@
+--- 
+- name: Add mongo GPG key
+  shell: |
+    wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
+
+- name: Add MongoDB repository
+  shell: |
+    echo \
+    "deb [arch=$(dpkg --print-architecture)] https://repo.mongodb.org/apt/ubuntu \
+    $(lsb_release -cs)/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list > /dev/null
+
+- name: Update apt
+  apt: update_cache=yes
+
+- name: Install mongodb
+  apt: 
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - mongodb-org
+    - python3-pymongo
+
+- name: Install PyMongo
+  pip:
+    name: pymongo==4.0.0
+    state: present
+
+- name: Start MongoDB service
+  service:
+    name: mongod
+    state: started
+    enabled: yes
+
+- name: Create mongo admin user (This task is executed at initial run only)
+  mongodb_user:
+    user: "{{ mongodb_user }}"
+    password: "{{ mongodb_password }}"
+    database: admin
+    roles:
+      - userAdminAnyDatabase
+    state: present
+    update_password: always
+  ignore_errors: true
+  register: create_user_result
+
+- name: Create admin user after enabling authorization (This executes when the playbook run again)
+  mongodb_user:
+    login_user: "{{ mongodb_user }}"
+    login_password: "{{ mongodb_password }}"
+    user: "{{ mongodb_user }}"
+    password: "{{ mongodb_password }}"
+    database: admin
+    roles:
+      - userAdminAnyDatabase
+    state: present
+    update_password: always
+  when: create_user_result.failed
+  
+- name: Enable MongoDB authorization
+  blockinfile:
+    path: /etc/mongod.conf
+    block: |
+      security:
+        authorization: enabled
+
+- name: Replace bind IP in mongod.conf
+  lineinfile:
+    dest: /etc/mongod.conf
+    regexp: '  bindIp: 127.0.0.1'
+    line: '  bindIp: 192.168.64.11'
+    # backrefs: yes
+  become: true
+
+
+- name: Restart MongoDB service
+  service:
+    name: mongod
+    state: restarted

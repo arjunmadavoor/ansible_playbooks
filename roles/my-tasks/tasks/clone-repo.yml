@@ -1,0 +1,33 @@
+---
+- name: Copy git key
+  copy:
+    src: "{{ git_key }}"
+    dest: ~/.ssh/id_rsa
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Check if repository is already cloned
+  stat:
+    path: "{{ project_dir }}"
+  register: repo_stat
+
+- name: Clone repository if it does not exist
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ project_dir }}"
+    version: "{{git_branch}}"
+    accept_hostkey: yes
+  when: repo_stat.stat.exists == False
+
+- name: Check if repository folder renamed
+  stat:
+    path: "{{ project_dir }}"
+  register: repo_stat
+
+- name: Rename project folder
+  command: "mv {{dir_default_path}} {{dir_new_path}}"
+  when: repo_stat.stat.exists == False
+
+- name: Change Ownership
+  command: "chown -R www-data. {{dir_new_path}}"

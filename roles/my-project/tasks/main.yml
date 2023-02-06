@@ -1,0 +1,10 @@
+---
+# tasks file for myproject
+# - include_vars: "vars/dev.yml"
+- import_tasks: my-tasks/tasks/install-packages.yml
+- import_tasks: my-tasks/tasks/install-docker.yml
+- import_tasks: my-tasks/tasks/clone-repo.yml
+- import_tasks: my-tasks/tasks/setup-django.yml
+- import_tasks: my-tasks/tasks/rabbitmq-2.yml
+- import_tasks: my-tasks/tasks/setup-gunicorn.yml
+- import_tasks: my-tasks/tasks/setup-nginx.yml

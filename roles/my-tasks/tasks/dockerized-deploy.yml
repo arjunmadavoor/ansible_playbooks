@@ -1,0 +1,22 @@
+---
+
+- name: Copy settings from sample
+  shell: |
+    cd {{project_dir}}/{{project_app_name}}/
+    cp settings_container.py settings.py
+
+- name: Copy project env file
+  copy:
+    src: "{{project_name}}_env_{{ env }}"
+    dest: "{{project_env_path}}"
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    force: yes
+  when: env_required
+
+- name: Execute docker compose command
+  shell: |
+    cd {{project_dir}}
+    git pull
+    docker compose up -d  --build --force-recreate --remove-orphans

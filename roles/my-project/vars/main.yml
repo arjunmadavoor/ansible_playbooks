@@ -1,0 +1,55 @@
+---
+# Dependencies that needs to be installed initially
+dependencies:
+  - python3
+  - python3-pip
+  - nginx-full
+  - git
+  - software-properties-common
+  - curl
+  - uwsgi
+  - default-libmysqlclient-dev
+  - build-essential
+  - virtualenv
+  - python3.7
+  - python3.7-distutils
+  - python3.7-dev
+  - libpq-dev
+  - libffi-dev
+  - libssl-dev
+  - python3-distutils
+
+# Repository URL and Key file name in files folder 
+repo_url: git@github.com-personal:arjunmadavoor/myproject.git
+git_key: id_rsa
+git_branch: development
+
+project_dir: /var/www/myproject
+project_root: /var/www
+
+# For renaming the clone folder 
+dir_default_path: /var/www/AAC
+dir_new_path: /var/www/myproject
+
+project_env_path: /var/www/myproject/myproject/.env
+
+virtualenv_dir: /var/www/env/
+virtualenv_python_path: /usr/bin/python3.7
+requirements_file: requirements.txt
+
+# env: prod
+project_name: myproject
+project_user: www-data
+
+# Varibales in gunicorn file 
+gunicorn_user: www-data
+gunicorn_group: www-data
+gunicorn_workdir: /var/www/myproject
+project_app_name: myproject
+
+# Nginx variables 
+server_name: 1927.0.0.1
+
+env: dev
+env_required: true
+settings_required: false

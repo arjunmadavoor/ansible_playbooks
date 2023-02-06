@@ -1,0 +1,51 @@
+---
+- name: Update apt
+  apt: update_cache=yes
+
+- name: Install postgres dependencies
+  apt: pkg={{ item }} state=present
+  with_items:
+    - postgresql
+    - postgresql-contrib
+    - libpq-dev
+    - acl
+
+- name: Install psycopg2 library
+  pip:
+    name: psycopg2
+
+- name: "Create postgres database"
+  postgresql_db:
+    state: present
+    name: "{{ postgres_db }}"
+  become: true
+  become_user: postgres
+
+- name: "Create db user"
+  postgresql_user:
+    state: present
+    name: "{{ postgres_user }}"
+    password: "{{ postgres_password }}"
+  become: true
+  become_user: postgres
+
+- name: "Grant postgres db user access to db"
+  postgresql_privs:
+    type: database
+    database: "{{ postgres_db }}"
+    roles: "{{ postgres_user }}"
+    grant_option: no
+    privs: all
+  become: true
+  become_user: postgres
+
+
+# - name: Set up PostgreSQL database
+#   become_user: postgres
+#   shell: |
+#     psql -c "CREATE DATABASE {{ postgres_db }};"
+#     psql -c "CREATE USER {{ postgres_user }} WITH PASSWORD '{{ postgres_password }}';"
+#     psql -c "ALTER ROLE {{ postgres_user }} SET client_encoding TO 'utf8';"
+#     psql -c "ALTER ROLE {{ postgres_user }} SET default_transaction_isolation TO 'read committed';"
+#     psql -c "ALTER ROLE {{ postgres_user }} SET timezone TO 'UTC';"
+#     psql -c "GRANT ALL PRIVILEGES ON DATABASE {{ postgres_db }} TO {{ postgres_user }};"
